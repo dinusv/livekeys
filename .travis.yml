@@ -40,6 +40,7 @@ install:
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       brew update;
       brew install python3;
+      brew install doxygen;
       sudo mkdir /opt/qt;
       sudo chmod 777 /opt/qt;
       sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun;
@@ -72,7 +73,7 @@ install:
       export QTDIR=/opt/qt/5.11.1/clang_64;
     fi
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
-      sudo apt-get install -y libtiff5 libtiff5-dev;
+      sudo apt-get install -y libtiff5 libtiff5-dev python3-setuptools;
       git clone --single-branch -b 4.1.1 https://github.com/opencv/opencv.git;
       cd opencv;
       mkdir build;

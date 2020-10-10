@@ -71,17 +71,6 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - name: Setup Livepm
-        run: |
-          pip --version
-          python --version
-          python -m pip install --upgrade pip
-          cd build
-          wget https://github.com/livecv/live-pm/archive/master.zip
-          unzip master.zip
-          mv live-pm-master/* .
-          pip install -r requirements.txt
-          python livepm/main.py build .. macos_clang_64
           
       - name: Setup Livepm
         run: |

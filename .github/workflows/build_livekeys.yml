@@ -37,8 +37,8 @@ jobs:
           sudo mkdir /opt/qt
           sudo chmod 777 /opt/qt
           sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
-          rm -r '/usr/local/lib/python2.7/site-packages/numpy'
-          rm '/usr/local/bin/f2py'
+          rm -r '/usr/local/lib/python2.7/site-packages/numpy' || true
+          rm '/usr/local/bin/f2py' || true
           HOMEBREW_NO_AUTO_UPDATE=1 brew install numpy
           
       - name: Build OpenCV

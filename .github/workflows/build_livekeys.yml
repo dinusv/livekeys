@@ -34,9 +34,9 @@ jobs:
       - name: Setup python and numpy
         run: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade python3
-          mkdir /opt/qt
-          chmod 777 /opt/qt
-          ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
+          sudo mkdir /opt/qt
+          sudo chmod 777 /opt/qt
+          sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
           rm -r '/usr/local/lib/python2.7/site-packages/numpy'
           rm '/usr/local/bin/f2py'
           HOMEBREW_NO_AUTO_UPDATE=1 brew install numpy
@@ -56,6 +56,8 @@ jobs:
           echo $OPENCV_DIR
           echo $PKG_CONFIG_PATH
           echo $PWD
+          echo "::set-env name=OPENCV_DIR::$OPENCV_DIR"
+          echo "::set-env name=PKG_CONFIG_PATH::$PKG_CONFIG_PATH"
           
       - name: Setup Livepm
         run: |
@@ -69,6 +71,7 @@ jobs:
           cd ..
           npm install --global create-dmg
           export LIVEDOC=$PWD/live-doc/live-doc.js
+          echo "::set-env name=LIVEDOC::$LIVEDOC"
           
       - name: Setup Qt
         run: |          
@@ -76,6 +79,7 @@ jobs:
           aqt install 5.14.2 --outputdir /opt/qt mac desktop clang_64 -m qtwebengine qtquick3d
           aqt doc 5.14.2 --outputdir /opt/qt mac desktop -m qtwebengine
           export QTDIR=/opt/qt/5.14.2/clang_64
+          echo "::set-env name=QTDIR::$QTDIR"
           
       - name: Build
         run: |

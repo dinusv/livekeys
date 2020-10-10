@@ -32,3 +32,5 @@ jobs:
         HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl
         HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
         wget --help
+        
+        

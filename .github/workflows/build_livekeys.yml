@@ -26,7 +26,6 @@ jobs:
           pip --version
           pip3 --version
           python --version
-          cd build
           wget https://github.com/livecv/live-pm/archive/master.zip
           unzip master.zip
           mv live-pm-master/* .

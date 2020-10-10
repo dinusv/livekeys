@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Download dependencies
         run: |
-          brew tap livekeys/opencv
+          brew tap live-keys/opencv
           then brew update
           HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl
           HOMEBREW_NO_AUTO_UPDATE=1 brew install wget

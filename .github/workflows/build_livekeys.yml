@@ -80,7 +80,7 @@ jobs:
           npm install --global create-dmg
           export LIVEDOC=$PWD/live-doc/live-doc.js
           echo "::set-env name=LIVEDOC::$LIVEDOC"
-          pip3 install -r requirements.txt --user
+          pip3 install -r requirements.txt
           python3 livepm/main.py build .. macos_clang_64
         
         

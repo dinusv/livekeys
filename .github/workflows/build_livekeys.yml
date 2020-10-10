@@ -7,14 +7,15 @@ env:
 
 jobs:
   build:
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [macos-latest]
         include:
         - os: macos-latest
+          NAME: macos
           TARGET: x86_64-apple-darwin
           COMPILER: clang
           LINKER: clang

@@ -59,6 +59,14 @@ jobs:
           echo "::set-env name=OPENCV_DIR::$OPENCV_DIR"
           echo "::set-env name=PKG_CONFIG_PATH::$PKG_CONFIG_PATH"
           
+      - name: Setup Qt
+        run: |          
+          pip3 install aqtinstall
+          aqt install 5.14.2 --outputdir /opt/qt mac desktop clang_64 -m qtwebengine qtquick3d
+          aqt doc 5.14.2 --outputdir /opt/qt mac desktop -m qtwebengine
+          export QTDIR=/opt/qt/5.14.2/clang_64
+          echo "::set-env name=QTDIR::$QTDIR"
+          
       - name: Setup Livepm
         run: |
           cd build
@@ -72,17 +80,6 @@ jobs:
           npm install --global create-dmg
           export LIVEDOC=$PWD/live-doc/live-doc.js
           echo "::set-env name=LIVEDOC::$LIVEDOC"
-          
-      - name: Setup Qt
-        run: |          
-          pip3 install aqtinstall
-          aqt install 5.14.2 --outputdir /opt/qt mac desktop clang_64 -m qtwebengine qtquick3d
-          aqt doc 5.14.2 --outputdir /opt/qt mac desktop -m qtwebengine
-          export QTDIR=/opt/qt/5.14.2/clang_64
-          echo "::set-env name=QTDIR::$QTDIR"
-          
-      - name: Build
-        run: |
           pip3 install -r requirements.txt --user
           python3 livepm/main.py build .. macos_clang_64
         

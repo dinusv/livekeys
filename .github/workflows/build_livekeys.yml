@@ -90,5 +90,10 @@ jobs:
           echo "::set-env name=LIVEDOC::$LIVEDOC"
           pip install -r requirements.txt
           python livepm/main.py build .. macos_clang_64
+          python livepm/main.py deploy .. macos_clang_64
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Release
+          path: ./*.dmg
         
         

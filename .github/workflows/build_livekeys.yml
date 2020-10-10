@@ -21,17 +21,23 @@ jobs:
           LINKER: clang
 
     steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
       - name: Setup Livepm
         run: |
           pip --version
-          pip3 --version
           python --version
+          python -m pip install --upgrade pip
+          cd build
+          pip install .
+          pip install -r requirements.txt
           wget https://github.com/livecv/live-pm/archive/master.zip
           unzip master.zip
           mv live-pm-master/* .
-          pip3 install -r requirements.txt
-          python3 livepm/main.py build .. macos_clang_64
-      
+          python livepm/main.py build .. macos_clang_64      
       - uses: actions/checkout@v1
       - name: Download dependencies
         run: |

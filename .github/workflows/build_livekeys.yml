@@ -25,7 +25,7 @@ jobs:
       - name: Download dependencies
         run: |
           brew tap live-keys/opencv
-          then brew update
+          brew update
           HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl
           HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
           wget --help

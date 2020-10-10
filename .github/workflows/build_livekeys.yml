@@ -22,22 +22,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-      - name: Setup Livepm
-        run: |
-          pip --version
-          python --version
-          python -m pip install --upgrade pip
-          cd build
-          wget https://github.com/livecv/live-pm/archive/master.zip
-          unzip master.zip
-          mv live-pm-master/* .
-          pip install -r requirements.txt
-          python livepm/main.py build .. macos_clang_64      
-      - uses: actions/checkout@v1
       - name: Download dependencies
         run: |
           brew tap live-keys/opencv
@@ -49,7 +33,6 @@ jobs:
           
       - name: Setup python and numpy
         run: |
-          HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade python3
           sudo mkdir /opt/qt
           sudo chmod 777 /opt/qt
           sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
@@ -83,8 +66,28 @@ jobs:
           export QTDIR=/opt/qt/5.14.2/clang_64
           echo "::set-env name=QTDIR::$QTDIR"
           
+          
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
       - name: Setup Livepm
         run: |
+          pip --version
+          python --version
+          python -m pip install --upgrade pip
+          cd build
+          wget https://github.com/livecv/live-pm/archive/master.zip
+          unzip master.zip
+          mv live-pm-master/* .
+          pip install -r requirements.txt
+          python livepm/main.py build .. macos_clang_64
+          
+      - name: Setup Livepm
+        run: |
+          pip --version
+          python --version
+          python -m pip install --upgrade pip
           cd build
           wget https://github.com/livecv/live-pm/archive/master.zip
           unzip master.zip
@@ -96,7 +99,7 @@ jobs:
           npm install --global create-dmg
           export LIVEDOC=$PWD/live-doc/live-doc.js
           echo "::set-env name=LIVEDOC::$LIVEDOC"
-          pip3 install -r requirements.txt
-          python3 livepm/main.py build .. macos_clang_64
+          pip install -r requirements.txt
+          python livepm/main.py build .. macos_clang_64
         
         

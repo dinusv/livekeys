@@ -24,10 +24,37 @@ jobs:
       - uses: actions/checkout@v1
       - name: Download dependencies
         run: |
-          brew tap livekeys-opencv
+          brew tap livekeys/opencv
           then brew update
           HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl
           HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
           wget --help
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install doxygen
+          
+      - name: Setup python and numpy
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade python3
+          mkdir /opt/qt
+          chmod 777 /opt/qt
+          ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
+          rm -r '/usr/local/lib/python2.7/site-packages/numpy'
+          rm '/usr/local/bin/f2py'
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install numpy
+          
+      - name: Build OpenCV
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install --verbose live-keys/opencv/opencv
+          echo "Open CV environment"
+          ls /usr/local/Cellar
+          echo "/usr/local/opt"
+          ls /usr/local/opt
+          ls /usr/local/opt/opencv/lib
+          OPENCV_VERSION="$(ls -1 /usr/local/Cellar/opencv)"
+          echo $OPENCV_VERSION
+          export OPENCV_DIR=/usr/local/Cellar/opencv/$OPENCV_VERSION
+          export PKG_CONFIG_PATH=$OPENCV_DIR/lib/pkgconfig
+          echo $OPENCV_DIR
+          echo $PKG_CONFIG_PATH
+          echo $PWD
         
         

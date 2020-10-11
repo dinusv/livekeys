@@ -22,6 +22,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - name: test dir
+        run: | 
+          cd build
+          ls
+      - name: test dir 2
+        run: |
+          ls
+      
       - name: Download dependencies
         run: |
           brew tap live-keys/opencv
@@ -94,6 +102,6 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Release
-          path: ./*.dmg
+          path: build/*.dmg
         
         

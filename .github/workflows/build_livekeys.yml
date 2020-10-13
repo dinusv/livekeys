@@ -93,22 +93,9 @@ jobs:
           python livepm/main.py build .. macos_clang_64
           python livepm/main.py deploy .. macos_clang_64
           
-  release-upload:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    if: github.ref == 'refs/heads/master'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest]
-        include:
-        - os: macos-latest
-          NAME: macos
-          TARGET: x86_64-apple-darwin
-          COMPILER: clang
-          LINKER: clang
-    steps:
-      - uses: actions/upload-artifact@v2
+      - name: Upload Release
+        uses: actions/upload-artifact@v2
+        if: ${{ github.ref == 'ref/head/master' }}
         with:
           name: Release
           path: build/*.dmg

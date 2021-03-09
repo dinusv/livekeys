@@ -133,7 +133,7 @@ jobs:
           cd ..
           npm install --global create-dmg
           export LIVEDOC=$PWD/live-doc/live-doc.js
-          echo "::set-env name=LIVEDOC::$LIVEDOC"
+          echo "LIVEDOC=$LIVEDOC" >> $GITHUB_ENV
           pip install -r requirements.txt
           python livepm/main.py build .. macos_clang_64
           python livepm/main.py deploy .. macos_clang_64
@@ -149,6 +149,7 @@ jobs:
           npm install
           cd ..
           export LIVEDOC=$PWD/live-doc/live-doc.js
+          pip3 install -r requirements.txt
           python3 livepm/main.py build .. gcc_64
           python3 livepm/main.py deploy .. gcc_64
           python3 livepm/main.py deploy .. gcc_64_standalone

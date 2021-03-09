@@ -90,7 +90,7 @@ jobs:
           make -j8
           sudo make -j8 install
           export OPENCV_DIR=/usr/local/lib
-          cd ../../build
+          cd ../..
           echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
                   
       - name: Set up Python ${{ matrix.python-version }}
@@ -141,6 +141,7 @@ jobs:
       - name: Setup Livepm Linux
         if: runner.os == 'Linux'
         run: |
+          cd build
           echo $PWD
           ls
           wget https://github.com/livecv/live-pm/archive/master.zip

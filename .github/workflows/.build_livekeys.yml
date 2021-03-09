@@ -63,13 +63,15 @@ jobs:
         run: |
           if ("${{ runner.os }}" STREQUAL "Linux")
             git clone --single-branch -b 4.1.1 https://github.com/opencv/opencv.git
-            cd opencv; mkdir build; cd build
+            cd opencv
+            mkdir build
+            cd build
             cmake -D CMAKE_BUILD_TYPE=RELEASE -D OPENCV_GENERATE_PKGCONFIG=YES -D BUILD_EXAMPLES=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF ..
             make -j8
             sudo make -j8 install
             export OPENCV_DIR=/usr/local/lib
             cd ../../build
-            echo "::set-env name=OPENCV_DIR::$OPENCV_DIR"
+            echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
           elseif ("${{ runner.os }}" STREQUAL "macOS")
             HOMEBREW_NO_AUTO_UPDATE=1 brew install --verbose live-keys/opencv/opencv
             echo "Open CV environment"
@@ -84,8 +86,8 @@ jobs:
             echo $OPENCV_DIR
             echo $PKG_CONFIG_PATH
             echo $PWD
-            echo "::set-env name=OPENCV_DIR::$OPENCV_DIR"
-            echo "::set-env name=PKG_CONFIG_PATH::$PKG_CONFIG_PATH"
+            echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
+            echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
           endif()
           
           
@@ -102,13 +104,13 @@ jobs:
             aqt install 5.14.2 --outputdir /opt/qt linux desktop gcc_64 -m qtwebengine qtquick3d
             aqt doc 5.14.2 --outputdir /opt/qt linux desktop -m qtwebengine
             export QTDIR=/opt/qt/5.14.2/gcc_64
-            echo "::set-env name=QTDIR::$QTDIR"
+            echo "QTDIR=$QTDIR" >> $GITHUB_ENV
           elseif ("${{ runner.os }}" STREQUAL "macOS")
             pip3 install aqtinstall
             aqt install 5.14.2 --outputdir /opt/qt mac desktop clang_64 -m qtwebengine qtquick3d
             aqt doc 5.14.2 --outputdir /opt/qt mac desktop -m qtwebengine
             export QTDIR=/opt/qt/5.14.2/clang_64
-            echo "::set-env name=QTDIR::$QTDIR"
+            echo "QTDIR=$QTDIR" >> $GITHUB_ENV
           endif()
           
       - name: Setup Livepm

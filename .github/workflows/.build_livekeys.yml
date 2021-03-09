@@ -35,117 +35,123 @@ jobs:
           echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
           echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
       
-      - name: Download dependencies
+      - name: Download dependencies MacOS
+        if: runner.os == 'macOS'
         run: |
-          if ("${{ runner.os }}" STREQUAL "Linux")
-            sudo apt-get install -y libtiff5 libtiff5-dev python3-setuptools doxygen libssl1.0-dev nodejs-dev npm
-          elseif ("${{ runner.os }}" STREQUAL "macOS")
-            brew tap live-keys/opencv
-            brew update
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
-            wget --help
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install doxygen
-          endif()
+          brew tap live-keys/opencv
+          brew update
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
+          wget --help
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install doxygen
           
-      - name: Setup python and numpy
+      - name: Download dependencies Linux
+        if: runner.os == 'Linux'
         run: |
-          if ("${{ runner.os }}" STREQUAL "Linux")
-            sudo mkdir /opt/qt
-            sudo chmod 777 /opt/qt
-            sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
-            rm -r '/usr/local/lib/python2.7/site-packages/numpy' || true
-            rm '/usr/local/bin/f2py' || true
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install numpy
-          endif()
-          
-      - name: Build OpenCV
+          sudo apt-get install -y libtiff5 libtiff5-dev python3-setuptools doxygen libssl1.0-dev nodejs-dev npm
+      
+      - name: Setup python and numpy MacOS
+        if: runner.os == 'macOS'
         run: |
-          if ("${{ runner.os }}" STREQUAL "Linux")
-            git clone --single-branch -b 4.1.1 https://github.com/opencv/opencv.git
-            cd opencv
-            mkdir build
-            cd build
-            cmake -D CMAKE_BUILD_TYPE=RELEASE -D OPENCV_GENERATE_PKGCONFIG=YES -D BUILD_EXAMPLES=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF ..
-            make -j8
-            sudo make -j8 install
-            export OPENCV_DIR=/usr/local/lib
-            cd ../../build
-            echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
-          elseif ("${{ runner.os }}" STREQUAL "macOS")
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install --verbose live-keys/opencv/opencv
-            echo "Open CV environment"
-            ls /usr/local/Cellar
-            echo "/usr/local/opt"
-            ls /usr/local/opt
-            ls /usr/local/opt/opencv/lib
-            OPENCV_VERSION="$(ls -1 /usr/local/Cellar/opencv)"
-            echo $OPENCV_VERSION
-            export OPENCV_DIR=/usr/local/Cellar/opencv/$OPENCV_VERSION
-            export PKG_CONFIG_PATH=$OPENCV_DIR/lib/pkgconfig
-            echo $OPENCV_DIR
-            echo $PKG_CONFIG_PATH
-            echo $PWD
-            echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
-            echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
-          endif()
+          sudo mkdir /opt/qt
+          sudo chmod 777 /opt/qt
+          sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcrun
+          rm -r '/usr/local/lib/python2.7/site-packages/numpy' || true
+          rm '/usr/local/bin/f2py' || true
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install numpy
           
+      - name: Build OpenCV MacOS
+        if: runner.os == 'macOS'
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install --verbose live-keys/opencv/opencv
+          echo "Open CV environment"
+          ls /usr/local/Cellar
+          echo "/usr/local/opt"
+          ls /usr/local/opt
+          ls /usr/local/opt/opencv/lib
+          OPENCV_VERSION="$(ls -1 /usr/local/Cellar/opencv)"
+          echo $OPENCV_VERSION
+          export OPENCV_DIR=/usr/local/Cellar/opencv/$OPENCV_VERSION
+          export PKG_CONFIG_PATH=$OPENCV_DIR/lib/pkgconfig
+          echo $OPENCV_DIR
+          echo $PKG_CONFIG_PATH
+          echo $PWD
+          echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
           
+      - name: Build OpenCV Linux
+        if: runner.os == 'Linux'
+        run: |
+          git clone --single-branch -b 4.1.1 https://github.com/opencv/opencv.git
+          cd opencv
+          mkdir build
+          cd build
+          cmake -D CMAKE_BUILD_TYPE=RELEASE -D OPENCV_GENERATE_PKGCONFIG=YES -D BUILD_EXAMPLES=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF ..
+          make -j8
+          sudo make -j8 install
+          export OPENCV_DIR=/usr/local/lib
+          cd ../../build
+          echo "OPENCV_DIR=$OPENCV_DIR" >> $GITHUB_ENV
+                  
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
           
-      - name: Setup Qt
+      - name: Setup Qt MacOS
+        if: runner.os == 'macOS'
         run: |
-          if ("${{ runner.os }}" STREQUAL "Linux")
-            pip3 install aqtinstall --user
-            echo "Installed aqtinstall"
-            aqt install 5.14.2 --outputdir /opt/qt linux desktop gcc_64 -m qtwebengine qtquick3d
-            aqt doc 5.14.2 --outputdir /opt/qt linux desktop -m qtwebengine
-            export QTDIR=/opt/qt/5.14.2/gcc_64
-            echo "QTDIR=$QTDIR" >> $GITHUB_ENV
-          elseif ("${{ runner.os }}" STREQUAL "macOS")
-            pip3 install aqtinstall
-            aqt install 5.14.2 --outputdir /opt/qt mac desktop clang_64 -m qtwebengine qtquick3d
-            aqt doc 5.14.2 --outputdir /opt/qt mac desktop -m qtwebengine
-            export QTDIR=/opt/qt/5.14.2/clang_64
-            echo "QTDIR=$QTDIR" >> $GITHUB_ENV
-          endif()
+          pip3 install aqtinstall
+          aqt install 5.14.2 --outputdir /opt/qt mac desktop clang_64 -m qtwebengine qtquick3d
+          aqt doc 5.14.2 --outputdir /opt/qt mac desktop -m qtwebengine
+          export QTDIR=/opt/qt/5.14.2/clang_64
+          echo "QTDIR=$QTDIR" >> $GITHUB_ENV
           
-      - name: Setup Livepm
+      - name: Setup Qt Linux
+        if: runner.os == 'Linux'
         run: |
-          if ("${{ runner.os }}" STREQUAL "Linux")
-            wget https://github.com/livecv/live-pm/archive/master.zip
-            unzip master.zip
-            mv live-pm-master/* .
-            git clone https://github.com/live-keys/live-doc.git
-            cd live-doc
-            npm install
-            cd ..
-            export LIVEDOC=$PWD/live-doc/live-doc.js
-            python3 livepm/main.py build .. gcc_64
-            python3 livepm/main.py deploy .. gcc_64
-            python3 livepm/main.py deploy .. gcc_64_standalone          
-          elseif ("${{ runner.os }}" STREQUAL "macOS")
-            pip --version
-            python --version
-            python -m pip install --upgrade pip
-            cd build
-            wget https://github.com/livecv/live-pm/archive/master.zip
-            unzip master.zip
-            mv live-pm-master/* .
-            git clone https://github.com/live-keys/live-doc.git
-            cd live-doc
-            npm install
-            cd ..
-            npm install --global create-dmg
-            export LIVEDOC=$PWD/live-doc/live-doc.js
-            echo "::set-env name=LIVEDOC::$LIVEDOC"
-            pip install -r requirements.txt
-            python livepm/main.py build .. macos_clang_64
-            python livepm/main.py deploy .. macos_clang_64
-          endif()
+          pip3 install aqtinstall --user
+          echo "Installed aqtinstall"
+          aqt install 5.14.2 --outputdir /opt/qt linux desktop gcc_64 -m qtwebengine qtquick3d
+          aqt doc 5.14.2 --outputdir /opt/qt linux desktop -m qtwebengine
+          export QTDIR=/opt/qt/5.14.2/gcc_64
+          echo "QTDIR=$QTDIR" >> $GITHUB_ENV
+          
+      - name: Setup Livepm MacOS
+        if: runner.os == 'macOS'
+        run: |
+          pip --version
+          python --version
+          python -m pip install --upgrade pip
+          cd build
+          wget https://github.com/livecv/live-pm/archive/master.zip
+          unzip master.zip
+          mv live-pm-master/* .
+          git clone https://github.com/live-keys/live-doc.git
+          cd live-doc
+          npm install
+          cd ..
+          npm install --global create-dmg
+          export LIVEDOC=$PWD/live-doc/live-doc.js
+          echo "::set-env name=LIVEDOC::$LIVEDOC"
+          pip install -r requirements.txt
+          python livepm/main.py build .. macos_clang_64
+          python livepm/main.py deploy .. macos_clang_64
+          
+      - name: Setup Livepm Linux
+        if: runner.os == 'Linux'
+        run: |
+          wget https://github.com/livecv/live-pm/archive/master.zip
+          unzip master.zip
+          mv live-pm-master/* .
+          git clone https://github.com/live-keys/live-doc.git
+          cd live-doc
+          npm install
+          cd ..
+          export LIVEDOC=$PWD/live-doc/live-doc.js
+          python3 livepm/main.py build .. gcc_64
+          python3 livepm/main.py deploy .. gcc_64
+          python3 livepm/main.py deploy .. gcc_64_standalone
       
           
       - name: Upload Artifact MacOS

@@ -141,6 +141,8 @@ jobs:
       - name: Setup Livepm Linux
         if: runner.os == 'Linux'
         run: |
+          echo $PWD
+          ls
           wget https://github.com/livecv/live-pm/archive/master.zip
           unzip master.zip
           mv live-pm-master/* .
@@ -150,6 +152,10 @@ jobs:
           cd ..
           export LIVEDOC=$PWD/live-doc/live-doc.js
           pip3 install -r requirements.txt
+          echo "CWD:"
+          echo $PWD
+          ls
+          ls ..
           python3 livepm/main.py build .. gcc_64
           python3 livepm/main.py deploy .. gcc_64
           python3 livepm/main.py deploy .. gcc_64_standalone
